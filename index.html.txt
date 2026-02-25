@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EID CARD MAKER - Pro Version</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<style>
+/* Variabel Warna untuk Tema */
+:root {
+--primary: #7D8F69; /* Default Sage */
+--bg-card: #F8F4EA;
+--text-main: #2C3333;
+}
+
+.theme-midnight { --primary: #1e3a8a; --bg-card: #f0f4ff; --text-main: #0f172a; }
+.theme-terracotta { --primary: #a34a28; --bg-card: #fff5f0; --text-main: #451a03; }
+
+body {
+font-family: 'Plus Jakarta Sans', sans-serif;
+background: #fdfdfd;
+margin: 0; padding: 20px;
+display: flex; flex-wrap: wrap; justify-content: center; gap: 40px;
+}
+
+/* Preview Card */
+#product-canvas {
+width: 380px;
+background: var(--bg-card);
+border-radius: 25px;
+overflow: hidden;
+position: relative;
+box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+transition: 0.3s;
+}
+
+.photo-area {
+width: 100%; height: 400px;
+padding: 20px; box-sizing: border-box;
+}
+
+#user-photo {
+width: 100%; height: 100%;
+object-fit: cover;
+border-radius: 20px 20px 80px 20px;
+background: #eee;
+}
+
+.card-info { padding: 0 30px 30px 30px; }
+.card-info h2 {
+font-family: 'Playfair Display', serif;
+font-size: 2.2rem; color: var(--text-main); margin: 10px 0;
+}
+.line { width: 40px; height: 4px; background: var(--primary); margin: 15px 0; }
+
+/* Dashboard Control */
+.dashboard {
+width: 350px;
+background: white;
+padding: 30px;
+border-radius: 20px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+border: 1px solid #eee;
+}
+
+.control-group { margin-bottom: 20px; }
+label { font-size: 0.75rem; font-weight: bold; color: #888; text-transform: uppercase; }
+input, select {
+width: 100%; padding: 12px; margin-top: 5px;
+border: 1.5px solid #eee; border-radius: 10px; font-family: inherit;
+}
+
+.theme-selector { display: flex; gap: 10px; margin-top: 10px; }
+.dot {
+width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.btn-save {
+width: 100%; padding: 15px; border: none; border-radius: 12px;
+background: var(--text-main); color: white; font-weight: bold;
+cursor: pointer; font-size: 1rem; margin-top: 10px;
+}
+.btn-save:hover { opacity: 0.9; transform: translateY(-2px); }
+
+.watermark {
+position: absolute; bottom: 10px; right: 20px;
+font-size: 10px; opacity: 0.3; color: var(--text-main);
+}
+</style>
+</head>
+<body>
+
+<div id="product-canvas">
+<div class="photo-area">
+<img id="user-photo" src="https://via.placeholder.com/400x400?text=Upload+Foto+Disini">
+</div>
+<div class="card-info">
+<small style="color: var(--primary); font-weight: bold; letter-spacing: 2px;">EID MUBARAK 2026</small>
+<h2>Selamat <br> Hari Raya</h2>
+<div class="line"></div>
+<p id="text-preview" style="font-size: 0.9rem; color: #666;">Semoga setiap maaf yang terucap menjadi jembatan pahala bagi kita semua.</p>
+<div id="name-preview" style="font-family: 'Playfair Display', serif; font-weight: bold; color: var(--primary);">Keluarga Besar Bpk. Fulan</div>
+</div>
+<div class="watermark">Created by [NamaBrandKamu]</div>
+</div>
+
+<div class="dashboard">
+<h3 style="margin-top:0">Editor Kartu Pro</h3>
+
+<div class="control-group">
+<label>1. Pilih Foto</label>
+<input type="file" id="upload" accept="image/*">
+</div>
+
+<div class="control-group">
+<label>2. Nama Pengirim</label>
+<input type="text" id="input-name" placeholder="Contoh: Budi & Istri">
+</div>
+
+<div class="control-group">
+<label>3. Pilih Tema Warna</label>
+<div class="theme-selector">
+<div class="dot" style="background: #7D8F69;" onclick="setTheme('sage')"></div>
+<div class="dot" style="background: #1e3a8a;" onclick="setTheme('midnight')"></div>
+<div class="dot" style="background: #a34a28;" onclick="setTheme('terracotta')"></div>
+</div>
+</div>
+
+<button class="btn-save" onclick="generate()">Download Gambar (.PNG)</button>
+<p style="font-size: 11px; color: #999; margin-top: 15px; text-align: center;">© 2026 YourBrand Digital Product</p>
+</div>
+
+<script>
+// Update Foto
+document.getElementById('upload').addEventListener('change', function(e) {
+const reader = new FileReader();
+reader.onload = function() {
+document.getElementById('user-photo').src = reader.result;
+}
+reader.readAsDataURL(e.target.files[0]);
+});
+
+// Update Nama
+document.getElementById('input-name').addEventListener('input', function(e) {
+document.getElementById('name-preview').innerText = e.target.value || "Nama Anda";
+});
+
+// Ganti Tema
+function setTheme(theme) {
+const card = document.getElementById('product-canvas');
+card.className = '';
+if(theme !== 'sage') card.classList.add('theme-' + theme);
+}
+
+// Generate High Quality Image
+function generate() {
+const btn = document.querySelector('.btn-save');
+btn.innerText = "Sedang Membuat...";
+html2canvas(document.querySelector("#product-canvas"), {
+scale: 3,
+useCORS: true
+}).then(canvas => {
+const a = document.createElement('a');
+a.href = canvas.toDataURL("image/png");
+a.download = "Kartu_Lebaran_Pro.png";
+a.click();
+btn.innerText = "Download Gambar (.PNG)";
+});
+}
+</script>
+</body>
+</html>
